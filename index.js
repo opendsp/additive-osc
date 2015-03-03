@@ -4,7 +4,7 @@
  * @org opendsp
  * @author potasmic
  * @version 0.1.0
- * @desc additive oscillators, formulas from wikipedia
+ * @desc additive oscillators
  * @license mit
  */
 
@@ -22,24 +22,40 @@ Osc.prototype.config = function(type) {
     case 'sqr': 
       this.a = 4 / Math.PI;
       this.s = 1;
-      this.l = "Math.sin(2*Math.PI*(2*k-1)*freq*t)/(2*k-1);";
+      
+      this.l = function(k,freq,t) {
+        return Math.sin(2*Math.PI*(2*k-1)*freq*t)/(2*k-1);
+      }
     break;
     case 'tri':
       this.a = 8 / Math.pow(Math.PI,2);
       this.s = 0;
-      this.l = "Math.pow(-1,k)*Math.sin(Math.PI*2*(2*k+1)*freq*t)/Math.pow(2*k+1,2)";
+      
+      this.l = function(k,freq,t) {
+        return Math.pow(-1,k)*Math.sin(2*Math.PI*(2*k+1)*freq*t)/Math.pow(2*k+1,2);
+      }
     break;
     case 'saw':
       this.a = 2 / Math.PI;
       this.s = 1;
-      this.l = "Math.pow(-1,k)*Math.sin(2*Math.PI*k*freq*t)/k";
+      
+      this.l = function(k,freq,t) {
+        return Math.pow(-1,k)*Math.sin(2*Math.PI*k*freq*t)/k;
+      }
     break;
     case 'ramp':
       this.a = -2 / Math.PI ;
       this.s = 1;
-      this.l = "Math.sin(2*Math.PI*k*freq*t)/k";
+      
+      this.l = function(k,freq,t) {
+        return Math.sin(2*Math.PI*k*freq*t)/k;
+      }
     break;
   }
+}
+
+function cycle(k, f, t, a, num, denom) {
+  return a(k)*num(k,f,t)/denom(k);
 }
 
 Osc.prototype.play = function(t,freq) {
@@ -47,7 +63,7 @@ Osc.prototype.play = function(t,freq) {
   
   for(var k = this.s; k <= this.iter; k++) 
     {
-      sum += eval(this.l);
+      sum += this.l(k, freq, t);
     }
   return this.a * sum;
 }
