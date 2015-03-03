@@ -3,7 +3,7 @@
  * @module additive-osc
  * @org opendsp
  * @author potasmic
- * @version 0.1.0
+ * @version 0.1.1
  * @desc additive oscillators
  * @license mit
  */
